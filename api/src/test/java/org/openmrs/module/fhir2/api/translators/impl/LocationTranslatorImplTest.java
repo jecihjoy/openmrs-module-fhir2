@@ -12,8 +12,10 @@ package org.openmrs.module.fhir2.api.translators.impl;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.openmrs.Location;
+import org.openmrs.module.fhir2.api.translators.LocationAddressTranslator;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -27,14 +29,22 @@ public class LocationTranslatorImplTest {
 	
 	private static final String LOCATION_DESCRIPTION = "Test description";
 	
+	private static final String LOCATION_LATITUDE = "25.5";
+	
+	private static final String LOCATION_LONGITUDE = "25.5";
+	
 	private LocationTranslatorImpl locationTranslator;
 	
 	private Location omrsLocation;
 	
+	@Mock
+	private LocationAddressTranslator locationAddressTranslator;
+	
 	@Before
 	public void setup() {
-		locationTranslator = new LocationTranslatorImpl();
 		omrsLocation = new Location();
+		locationTranslator = new LocationTranslatorImpl();
+		locationTranslator.setLocationAddressTranslator(locationAddressTranslator);
 	}
 	
 	@Test
@@ -109,4 +119,32 @@ public class LocationTranslatorImplTest {
 		assertNotNull(omrsLocation.getDescription());
 		assertEquals(omrsLocation.getDescription(), LOCATION_DESCRIPTION);
 	}
+	
+	@Test
+	public void shouldCreateFhirPositionObjectFromLatitudeAndLongitude() {
+		omrsLocation.setLatitude(LOCATION_LATITUDE);
+		omrsLocation.setLongitude(LOCATION_LONGITUDE);
+		org.hl7.fhir.r4.model.Location fhirLocation = locationTranslator.toFhirResource(omrsLocation);
+		assertNotNull(fhirLocation);
+		assertNotNull(fhirLocation.getPosition());
+		assertNotNull(fhirLocation.getPosition().getLatitude());
+		assertNotNull(fhirLocation.getPosition().getLongitude());
+	}
+	
+	@Test
+	public void shouldSetFhirLocationToActiveIfLocationIsNotRetired() {
+		omrsLocation.setRetired(false);
+		org.hl7.fhir.r4.model.Location fhirLocation = locationTranslator.toFhirResource(omrsLocation);
+		assertNotNull(fhirLocation);
+		assertEquals(fhirLocation.getStatus(), org.hl7.fhir.r4.model.Location.LocationStatus.ACTIVE);
+	}
+	
+	@Test
+	public void shouldSetFhirLocationToInActiveIfLocationIsRetired() {
+		omrsLocation.setRetired(true);
+		org.hl7.fhir.r4.model.Location fhirLocation = locationTranslator.toFhirResource(omrsLocation);
+		assertNotNull(fhirLocation);
+		assertEquals(fhirLocation.getStatus(), org.hl7.fhir.r4.model.Location.LocationStatus.INACTIVE);
+	}
+	
 }
