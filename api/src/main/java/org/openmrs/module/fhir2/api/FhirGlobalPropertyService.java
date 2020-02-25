@@ -15,4 +15,6 @@ public interface FhirGlobalPropertyService {
 	
 	String getGlobalProperty(String property) throws APIException;
 	
+	String getGlobalProperty(String property, String defaultValue) throws APIException;
+	
 }

@@ -52,7 +52,7 @@ import org.openmrs.module.fhir2.api.translators.PatientReferenceTranslator;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ObservationTranslatorImplTest {
-
+	
 	private static final String OBS_UUID = "12345-abcde-12345";
 	
 	private static final String CONCEPT_UUID = "54321-abcde-54321";

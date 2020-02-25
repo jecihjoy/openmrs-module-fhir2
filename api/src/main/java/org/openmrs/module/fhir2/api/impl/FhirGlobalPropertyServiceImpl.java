@@ -32,4 +32,11 @@ public class FhirGlobalPropertyServiceImpl implements FhirGlobalPropertyService 
 	public String getGlobalProperty(String property) throws APIException {
 		return dao.getGlobalProperty(property);
 	}
+	
+	@Override
+	@Transactional(readOnly = true)
+	public String getGlobalProperty(String property, String defaultValue) throws APIException {
+		String result = getGlobalProperty(property);
+		return result == null ? defaultValue : result;
+	}
 }
