@@ -94,6 +94,19 @@ public class FhirMedicationDaoImplTest extends BaseModuleContextSensitiveTest {
 		assertThat(result.size(), greaterThanOrEqualTo(1));
 		assertThat(result.iterator().next().getDosageForm().getUuid(), equalTo(DOSAGE_FORM_UUID));
 	}
+
+	@Test
+	public void searchForMedications_shouldSearchMedicationsByIngredientCode() {
+		org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger("org.hibernate.SQL");
+		logger.setLevel(org.apache.log4j.Level.ALL);
+		TokenOrListParam ingredientCode = new TokenOrListParam();
+		ingredientCode.addOr(new TokenParam().setValue(INGREDIENT_UUID));
+		Collection<Drug> result = medicationDao.searchForMedications(null, null, ingredientCode, null);
+		assertThat(result, notNullValue());
+		assertThat(result.size(), greaterThanOrEqualTo(1));
+		assertThat(result.iterator().next().getIngredients().iterator().next().getIngredient().getUuid(),
+				equalTo(INGREDIENT_UUID));
+	}
 	
 	@Test
 	public void searchForMedications_shouldSearchMedicationsByClinicalStatus() {
