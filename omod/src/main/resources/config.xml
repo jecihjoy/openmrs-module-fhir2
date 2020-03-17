@@ -46,9 +46,9 @@
 	
 	<!-- Extensions -->
 
-	<require_modules>
-		<require_module>org.openmrs.module.emrapi</require_module>
-	</require_modules>
+<!--	<require_modules>-->
+<!--		<require_module>org.openmrs.module.emrapi</require_module>-->
+<!--	</require_modules>-->
 
 	<aware_of_modules>
 		<aware_of_module>org.openmrs.module.legacyui</aware_of_module>

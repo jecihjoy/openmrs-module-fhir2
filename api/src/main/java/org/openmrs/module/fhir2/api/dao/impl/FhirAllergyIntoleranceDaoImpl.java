@@ -10,16 +10,20 @@
 package org.openmrs.module.fhir2.api.dao.impl;
 
 import static org.hibernate.criterion.Restrictions.eq;
+import static org.hibernate.criterion.Restrictions.or;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.TokenOrListParam;
+import ca.uhn.fhir.rest.param.TokenParam;
 import lombok.AccessLevel;
 import lombok.Setter;
 import org.hibernate.Criteria;
@@ -45,7 +49,7 @@ public class FhirAllergyIntoleranceDaoImpl extends BaseDaoImpl implements FhirAl
 	@Inject
 	private FhirGlobalPropertyService globalPropertyService;
 	
-	private List<String> severityConceptUuids;
+	private Map<String, String> severityConceptUuids;
 	
 	@Override
 	public Allergy getAllergyIntoleranceByUuid(String uuid) {
@@ -59,7 +63,7 @@ public class FhirAllergyIntoleranceDaoImpl extends BaseDaoImpl implements FhirAl
 	        TokenOrListParam clinicalStatus) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Allergy.class);
 		handlePatientReference(criteria, patientReference, "patient");
-		handleAllergenCategory("allergen.allergenType", category);
+		handleAllergenCategory(criteria, "allergen.allergenType", category);
 		handleAllergen(criteria, allergen);
 		handleSeverity(criteria, severity).ifPresent(criteria::add);
 		handleManifestation(criteria, manifestationCode);
@@ -101,13 +105,13 @@ public class FhirAllergyIntoleranceDaoImpl extends BaseDaoImpl implements FhirAl
 				        .fromCode(token.getValue());
 				switch (severity) {
 					case MILD:
-						return Optional.of(eq("sc.uuid", severityConceptUuids.get(0)));
+						return Optional.of(eq("sc.uuid", severityConceptUuids.get(FhirConstants.GLOBAL_PROPERTY_MILD)));
 					case MODERATE:
-						return Optional.of(eq("sc.uuid", severityConceptUuids.get(1)));
+						return Optional.of(eq("sc.uuid", severityConceptUuids.get(FhirConstants.GLOBAL_PROPERTY_MODERATE)));
 					case SEVERE:
-						return Optional.of(eq("sc.uuid", severityConceptUuids.get(2)));
+						return Optional.of(eq("sc.uuid", severityConceptUuids.get(FhirConstants.GLOBAL_PROPERTY_SEVERE)));
 					case NULL:
-						return Optional.of(eq("sc.uuid", severityConceptUuids.get(3)));
+						return Optional.of(eq("sc.uuid", severityConceptUuids.get(FhirConstants.GLOBAL_PROPERTY_OTHER)));
 				}
 			}
 			catch (FHIRException ignored) {}
@@ -115,30 +119,37 @@ public class FhirAllergyIntoleranceDaoImpl extends BaseDaoImpl implements FhirAl
 		});
 	}
 	
-	private Optional<Criterion> handleAllergenCategory(String propertyName, TokenOrListParam categoryParam) {
-		if (categoryParam == null) {
-			return Optional.empty();
-		}
-		
-		return handleOrListParam(categoryParam, token -> {
-			try {
+	private Optional<Criterion> handleAllergenCategory(Criteria criteria, String propertyName,
+	        TokenOrListParam categoryParam) {
+		if (categoryParam != null) {
+			
+			Collection<Criterion> criterionCollection = new ArrayList<>();
+			
+			for (TokenParam token : categoryParam.getValuesAsQueryTokens()) {
 				AllergyIntolerance.AllergyIntoleranceCategory category = AllergyIntolerance.AllergyIntoleranceCategory
 				        .fromCode(token.getValue());
+				
 				switch (category) {
 					case FOOD:
-						return Optional.of(eq(propertyName, AllergenType.FOOD));
+						criteria.add(eq(propertyName, AllergenType.FOOD));
+						break;
 					case MEDICATION:
-						return Optional.of(eq(propertyName, AllergenType.DRUG));
+						criteria.add(eq(propertyName, AllergenType.DRUG));
+						break;
 					case ENVIRONMENT:
-						return Optional.of(eq(propertyName, AllergenType.ENVIRONMENT));
-					case NULL:
-						return Optional.of(eq(propertyName, AllergenType.OTHER));
+						criteria.add(eq(propertyName, AllergenType.ENVIRONMENT));
+						break;
+					default:
+						criteria.add(eq(propertyName, AllergenType.OTHER));
 				}
+				
+				criterionCollection.add((Criterion) criteria);
 			}
-			catch (FHIRException ignored) {}
-			return Optional.empty();
-		});
+			return Optional.of(or(toCriteriaArray((Stream<Optional<Criterion>>) criterionCollection)));
+			
+		}
 		
+		return Optional.empty();
 	}
 	
 }
