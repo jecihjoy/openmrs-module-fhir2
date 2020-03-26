@@ -7,21 +7,12 @@
  * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
  * graphic logo is a trademark of OpenMRS Inc.
  */
-package org.openmrs.module.fhir2.api;
+package org.openmrs.module.fhir2.api.dao;
 
 import javax.validation.constraints.NotNull;
 
-import java.util.Collection;
-
-import ca.uhn.fhir.rest.param.TokenOrListParam;
-import org.hl7.fhir.r4.model.Medication;
-
-public interface FhirMedicationService {
+public interface FhirBaseDao<T> {
 	
-	Medication getMedicationByUuid(@NotNull String uuid);
+	T getValueByUuid(@NotNull String uuid);
 	
-	Medication testMedication(@NotNull String uuid);
-	
-	Collection<Medication> searchForMedications(TokenOrListParam code, TokenOrListParam dosageForm,
-	        TokenOrListParam ingredientCode, TokenOrListParam status);
 }
