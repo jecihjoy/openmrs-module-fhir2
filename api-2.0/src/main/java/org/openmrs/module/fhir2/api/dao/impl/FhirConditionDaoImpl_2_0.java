@@ -24,6 +24,7 @@ import ca.uhn.fhir.rest.param.ReferenceAndListParam;
 import ca.uhn.fhir.rest.param.TokenAndListParam;
 import lombok.AccessLevel;
 import lombok.Setter;
+import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.openmrs.annotation.OpenmrsProfile;
@@ -36,7 +37,7 @@ import org.springframework.stereotype.Component;
 @Component
 @Setter(AccessLevel.PACKAGE)
 @OpenmrsProfile(openmrsPlatformVersion = "2.0.* - 2.1.*")
-public class FhirConditionDaoImpl_2_0 implements FhirConditionDao<Condition> {
+public class FhirConditionDaoImpl_2_0 extends BaseDaoImpl implements FhirConditionDao<Condition> {
 	
 	@Inject
 	@Named("sessionFactory")
@@ -83,11 +84,19 @@ public class FhirConditionDaoImpl_2_0 implements FhirConditionDao<Condition> {
 		
 		return condition;
 	}
-	
+
 	@Override
 	public Collection<Condition> searchForConditions(ReferenceAndListParam patientParam, ReferenceAndListParam subjectParam,
 	        TokenAndListParam code, TokenAndListParam clinicalStatus, DateRangeParam onsetDate, QuantityParam onsetAge,
 	        DateRangeParam recordedDate, SortSpec sort) {
-		return null; // TODO
-	}
+
+			Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Condition.class);
+
+			handlePatientReference(criteria, patientParam);
+			if (patientParam == null) {
+				handlePatientReference(criteria, subjectParam);
+			}
+			return criteria.list();
+
+		}
 }
