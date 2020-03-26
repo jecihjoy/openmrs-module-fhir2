@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.Setter;
 import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
+import org.hl7.fhir.r4.model.Medication;
 import org.openmrs.Drug;
 import org.openmrs.module.fhir2.api.dao.FhirMedicationDao;
 import org.springframework.stereotype.Component;
@@ -36,6 +37,11 @@ public class FhirMedicationDaoImpl extends BaseDaoImpl implements FhirMedication
 	@Override
 	public Drug getMedicationByUuid(String uuid) {
 		return (Drug) sessionFactory.getCurrentSession().createCriteria(Drug.class).add(eq("uuid", uuid)).uniqueResult();
+	}
+	
+	@Override
+	public Object getValueByUuid(Medication medication, String uuid) {
+		return getValueByUuid(medication, uuid);
 	}
 	
 	@Override

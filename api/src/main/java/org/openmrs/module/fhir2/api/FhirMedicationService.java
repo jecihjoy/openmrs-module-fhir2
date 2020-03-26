@@ -20,7 +20,7 @@ public interface FhirMedicationService {
 	
 	Medication getMedicationByUuid(@NotNull String uuid);
 	
-	Medication testMedication(@NotNull String uuid);
+	Medication getValueByUuid(String uuid);
 	
 	Collection<Medication> searchForMedications(TokenOrListParam code, TokenOrListParam dosageForm,
 	        TokenOrListParam ingredientCode, TokenOrListParam status);

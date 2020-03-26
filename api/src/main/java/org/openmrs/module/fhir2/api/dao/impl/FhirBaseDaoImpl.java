@@ -17,21 +17,18 @@ import javax.inject.Named;
 import lombok.AccessLevel;
 import lombok.Setter;
 import org.hibernate.SessionFactory;
-import org.openmrs.Drug;
-import org.openmrs.module.fhir2.api.dao.FhirBaseDao;
 import org.springframework.stereotype.Component;
 
 @Component
 @Setter(AccessLevel.PACKAGE)
-public class FhirBaseDaoImpl<T> implements FhirBaseDao<T> {
+public abstract class FhirBaseDaoImpl {
 	
 	@Inject
 	@Named("sessionFactory")
 	private SessionFactory sessionFactory;
 	
-	@Override
-	public T getValueByUuid(String uuid) {
-		return (T) sessionFactory.getCurrentSession().createCriteria(Drug.class).add(eq("uuid", uuid)).uniqueResult();
+	public Object getValueByUuid(Object object, String uuid) {
+		return (Object) sessionFactory.getCurrentSession().createCriteria(Object.class).add(eq("uuid", uuid)).uniqueResult();
 		
 	}
 }

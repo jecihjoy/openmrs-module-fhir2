@@ -46,7 +46,7 @@ public class MedicationFhirResourceProvider implements IResourceProvider {
 	@Read
 	@SuppressWarnings("unused")
 	public Medication getMedicationByUuid(@IdParam @NotNull IdType id) {
-		Medication medication = fhirMedicationService.testMedication(id.getIdPart());
+		Medication medication = fhirMedicationService.getValueByUuid(id.getIdPart());
 		if (medication == null) {
 			throw new ResourceNotFoundException("Could not find medication with Id " + id.getIdPart());
 		}

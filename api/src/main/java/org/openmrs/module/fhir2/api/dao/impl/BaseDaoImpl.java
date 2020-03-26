@@ -25,6 +25,8 @@ import static org.hibernate.criterion.Restrictions.not;
 import static org.hibernate.criterion.Restrictions.or;
 import static org.hibernate.criterion.Subqueries.propertyEq;
 
+import javax.inject.Inject;
+import javax.inject.Named;
 import javax.validation.constraints.NotNull;
 
 import java.util.ArrayList;
@@ -64,6 +66,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.hibernate.Criteria;
+import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.MatchMode;
@@ -151,6 +154,15 @@ import org.openmrs.module.fhir2.FhirConceptSource;
  * </p>
  */
 public abstract class BaseDaoImpl {
+	
+	@Inject
+	@Named("sessionFactory")
+	private SessionFactory sessionFactory;
+	
+	public Object getValueByUuid(Object object, String uuid) {
+		return (Object) sessionFactory.getCurrentSession().createCriteria(Object.class).add(eq("uuid", uuid)).uniqueResult();
+		
+	}
 	
 	/**
 	 * Converts an {@link Iterable} to a {@link Stream}

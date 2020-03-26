@@ -20,7 +20,6 @@ import lombok.Setter;
 import org.hl7.fhir.r4.model.Medication;
 import org.openmrs.module.fhir2.api.FhirMedicationService;
 import org.openmrs.module.fhir2.api.dao.FhirMedicationDao;
-import org.openmrs.module.fhir2.api.dao.TestMedication;
 import org.openmrs.module.fhir2.api.translators.MedicationTranslator;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,19 +35,15 @@ public class FhirMedicationServiceImpl implements FhirMedicationService {
 	@Inject
 	private FhirMedicationDao medicationDao;
 	
-	@Inject
-	private TestMedication testMedication;
-	
-	@Inject
-	public Medication testMedication(String uuid) {
-		return medicationTranslator.toFhirResource(testMedication.getValueByUuid(uuid));
+	@Override
+	public Medication getValueByUuid(String uuid) {
+		return (Medication) medicationDao.getValueByUuid(new Medication(), uuid);
 	}
 	
 	@Override
 	@Transactional(readOnly = true)
 	public Medication getMedicationByUuid(String uuid) {
-		return null;
-//		return medicationTranslator.toFhirResource(medicationDao.getMedicationByUuid(uuid));
+		return medicationTranslator.toFhirResource(medicationDao.getMedicationByUuid(uuid));
 	}
 	
 	@Override
