@@ -23,7 +23,6 @@ import org.openmrs.User;
 import org.openmrs.module.fhir2.FhirConstants;
 import org.openmrs.module.fhir2.api.translators.GenderTranslator;
 import org.openmrs.module.fhir2.api.translators.PersonAddressTranslator;
-import org.openmrs.module.fhir2.api.translators.PersonNameTranslator;
 import org.openmrs.module.fhir2.api.translators.PractitionerTranslator;
 import org.springframework.stereotype.Component;
 
@@ -31,8 +30,8 @@ import org.springframework.stereotype.Component;
 @Setter(AccessLevel.PACKAGE)
 public class PractitionerTranslatorUserImpl implements PractitionerTranslator<User> {
 	
-	@Inject
-	private PersonNameTranslator nameTranslator;
+	//	@Inject
+	//	private PersonNameTranslator nameTranslator;
 	
 	@Inject
 	private PersonAddressTranslator addressTranslator;
@@ -46,7 +45,7 @@ public class PractitionerTranslatorUserImpl implements PractitionerTranslator<Us
 		practitioner.setId(user.getUuid());
 		
 		Identifier userIdentifier = new Identifier();
-		userIdentifier.setSystem(FhirConstants.OPENMRS_FHIR_EXT_USER_IDENTIFIER);
+		//		userIdentifier.setSystem(FhirConstants.OPENMRS_FHIR_EXT_USER_IDENTIFIER);
 		userIdentifier.setValue(user.getUserId().toString());
 		practitioner.addIdentifier(userIdentifier);
 		
@@ -54,7 +53,7 @@ public class PractitionerTranslatorUserImpl implements PractitionerTranslator<Us
 			practitioner.setBirthDate(user.getPerson().getBirthdate());
 			practitioner.setGender(genderTranslator.toFhirResource(user.getPerson().getGender()));
 			for (PersonName name : user.getPerson().getNames()) {
-				practitioner.addName(nameTranslator.toFhirResource(name));
+				//				practitioner.addName(nameTranslator.toFhirResource(name));
 			}
 			for (PersonAddress address : user.getPerson().getAddresses()) {
 				practitioner.addAddress(addressTranslator.toFhirResource(address));

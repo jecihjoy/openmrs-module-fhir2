@@ -73,7 +73,7 @@ public class PractitionerTranslatorUserImplTest {
 	@Before
 	public void setup() {
 		practitionerTranslatorUser = new PractitionerTranslatorUserImpl();
-		practitionerTranslatorUser.setNameTranslator(nameTranslator);
+		//		practitionerTranslatorUser.setNameTranslator(nameTranslator);
 		practitionerTranslatorUser.setAddressTranslator(addressTranslator);
 		practitionerTranslatorUser.setGenderTranslator(genderTranslator);
 		
