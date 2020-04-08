@@ -73,7 +73,7 @@ public class FhirMedicationServiceImplTest {
 	
 	@Test
 	public void getMedicationByUuid_shouldGetMedicationByUuid() {
-		when(medicationDao.getMedicationByUuid(MEDICATION_UUID)).thenReturn(drug);
+		when(medicationDao.get(MEDICATION_UUID)).thenReturn(drug);
 		when(medicationTranslator.toFhirResource(drug)).thenReturn(medication);
 		
 		Medication medication = fhirMedicationService.getMedicationByUuid(MEDICATION_UUID);
@@ -158,7 +158,7 @@ public class FhirMedicationServiceImplTest {
 		
 		when(medicationTranslator.toFhirResource(drug)).thenReturn(medication);
 		when(medicationTranslator.toOpenmrsType(any(Drug.class), any(Medication.class))).thenReturn(drug);
-		when(medicationDao.saveMedication(drug)).thenReturn(drug);
+		when(medicationDao.createOrUpdate(drug)).thenReturn(drug);
 		
 		Medication result = fhirMedicationService.saveMedication(medication);
 		assertThat(result, notNullValue());
@@ -198,10 +198,10 @@ public class FhirMedicationServiceImplTest {
 		medication.setId(MEDICATION_UUID);
 		medication.setStatus(Medication.MedicationStatus.INACTIVE);
 		
-		when(medicationDao.getMedicationByUuid(MEDICATION_UUID)).thenReturn(drug);
+		when(medicationDao.get(MEDICATION_UUID)).thenReturn(drug);
 		when(medicationTranslator.toFhirResource(drug)).thenReturn(medication);
 		when(medicationTranslator.toOpenmrsType(drug, medication)).thenReturn(drug);
-		when(medicationDao.saveMedication(drug)).thenReturn(drug);
+		when(medicationDao.createOrUpdate(drug)).thenReturn(drug);
 		
 		Medication result = fhirMedicationService.updateMedication(medication, MEDICATION_UUID);
 		assertThat(result, notNullValue());

@@ -9,8 +9,6 @@
  */
 package org.openmrs.module.fhir2.api.dao.impl;
 
-import static org.hibernate.criterion.Restrictions.eq;
-
 import java.util.Collection;
 
 import ca.uhn.fhir.rest.param.TokenAndListParam;
@@ -28,20 +26,20 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Setter(AccessLevel.PACKAGE)
-public class FhirMedicationDaoImpl extends BaseDaoImpl implements FhirMedicationDao {
+public class FhirMedicationDaoImpl extends BaseFhirDaoImpl<Drug> implements FhirMedicationDao {
 	
 	@Autowired
 	@Qualifier("sessionFactory")
 	private SessionFactory sessionFactory;
 	
 	@Override
-	public Drug getMedicationByUuid(String uuid) {
-		return (Drug) sessionFactory.getCurrentSession().createCriteria(Drug.class).add(eq("uuid", uuid)).uniqueResult();
+	public Drug get(String uuid) {
+		return super.get(uuid);
 	}
 	
 	@Override
-	public Drug saveMedication(Drug drug) {
-		sessionFactory.getCurrentSession().saveOrUpdate(drug);
+	public Drug createOrUpdate(Drug drug) {
+		super.createOrUpdate(drug);
 		
 		for (DrugIngredient ingredient : drug.getIngredients()) {
 			sessionFactory.getCurrentSession().saveOrUpdate(ingredient);
